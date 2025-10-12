@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Order Information"
+        android:text="📋 Thông Tin Đơn Hàng"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -27,10 +27,10 @@
             android:layout_marginEnd="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etOrderUserId"
+                android:id="@+id/etOrderCustomerId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User ID"
+                android:hint="ID Khách hàng"
                 android:inputType="number" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -42,10 +42,10 @@
             android:layout_marginStart="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etOrderProductId"
+                android:id="@+id/etOrderCakeId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Product ID"
+                android:hint="ID Bánh"
                 android:inputType="number" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -68,7 +68,7 @@
                 android:id="@+id/etOrderQuantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Quantity"
+                android:hint="Số lượng"
                 android:inputType="number" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -83,7 +83,7 @@
                 android:id="@+id/etOrderTotal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Total Price"
+                android:hint="Tổng tiền (VNĐ)"
                 android:inputType="numberDecimal" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -99,7 +99,47 @@
             android:id="@+id/etOrderDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Order Date (YYYY-MM-DD)" />
+            android:hint="Ngày đặt (YYYY-MM-DD)" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etOrderDeliveryDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ngày giao (YYYY-MM-DD)" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etOrderStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Trạng thái (Pending, Confirmed, Ready...)" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etOrderSpecialInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ghi chú đặc biệt"
+            android:inputType="textMultiLine" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,10 +149,11 @@
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etOrderStatus"
+            android:id="@+id/etOrderDeliveryAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Status" />
+            android:hint="Địa chỉ giao hàng"
+            android:inputType="textMultiLine" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,7 +168,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Save" />
+            android:text="💾 Lưu" />
 
         <Button
             android:id="@+id/btnCancelOrder"
@@ -135,7 +176,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Cancel" />
+            android:text="❌ Hủy" />
 
     </LinearLayout>
 

@@ -13,36 +13,56 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvUserName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Name"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvCustomerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Tên Khách Hàng"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tvCustomerType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VIP"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@android:color/holo_orange_light"
+                android:padding="4dp"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvUserEmail"
+            android:id="@+id/tvCustomerEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="user@email.com"
+            android:text="📧 user@email.com"
             android:textSize="14sp"
             android:layout_marginTop="4dp" />
 
         <TextView
-            android:id="@+id/tvUserPhone"
+            android:id="@+id/tvCustomerPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="+1234567890"
+            android:text="📞 +1234567890"
             android:textSize="14sp"
             android:layout_marginTop="2dp" />
 
         <TextView
-            android:id="@+id/tvUserAddress"
+            android:id="@+id/tvCustomerAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Address"
+            android:text="📍 Địa chỉ khách hàng"
             android:textSize="14sp"
             android:layout_marginTop="2dp" />
 
@@ -53,21 +73,21 @@
             android:layout_marginTop="8dp">
 
             <Button
-                android:id="@+id/btnEditUser"
+                android:id="@+id/btnEditCustomer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="Edit"
+                android:text="✏️ Sửa"
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/btnDeleteUser"
+                android:id="@+id/btnDeleteCustomer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:text="Delete"
+                android:text="🗑️ Xóa"
                 android:textSize="12sp"
                 android:backgroundTint="@android:color/holo_red_light" />
 
@@ -76,3 +96,4 @@
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
+

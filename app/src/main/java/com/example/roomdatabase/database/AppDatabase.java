@@ -5,24 +5,24 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import android.content.Context;
 
-import com.example.roomdatabase.dao.UserDao;
-import com.example.roomdatabase.dao.ProductDao;
+import com.example.roomdatabase.dao.CustomerDao;
+import com.example.roomdatabase.dao.CakeDao;
 import com.example.roomdatabase.dao.OrderDao;
-import com.example.roomdatabase.entity.User;
-import com.example.roomdatabase.entity.Product;
+import com.example.roomdatabase.entity.Customer;
+import com.example.roomdatabase.entity.Cake;
 import com.example.roomdatabase.entity.Order;
 
 @Database(
-    entities = {User.class, Product.class, Order.class},
-    version = 1,
+    entities = {Customer.class, Cake.class, Order.class},
+    version = 2,
     exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
     
     private static AppDatabase INSTANCE;
     
-    public abstract UserDao userDao();
-    public abstract ProductDao productDao();
+    public abstract CustomerDao customerDao();
+    public abstract CakeDao cakeDao();
     public abstract OrderDao orderDao();
     
     public static synchronized AppDatabase getInstance(Context context) {
@@ -31,7 +31,9 @@ public abstract class AppDatabase extends RoomDatabase {
                 context.getApplicationContext(),
                 AppDatabase.class,
                 "room_database"
-            ).build();
+            )
+            .fallbackToDestructiveMigration()
+            .build();
         }
         return INSTANCE;
     }

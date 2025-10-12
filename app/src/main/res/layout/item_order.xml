@@ -17,7 +17,7 @@
             android:id="@+id/tvOrderId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Order #1"
+            android:text="📋 Đơn Hàng #1"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/black" />
@@ -29,19 +29,19 @@
             android:layout_marginTop="4dp">
 
             <TextView
-                android:id="@+id/tvOrderUserId"
+                android:id="@+id/tvOrderCustomerId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="User ID: 1"
+                android:text="👤 Khách: #1"
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/tvOrderProductId"
+                android:id="@+id/tvOrderCakeId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Product ID: 1"
+                android:text="🍰 Bánh: #1"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -57,7 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Qty: 1"
+                android:text="📦 SL: 1"
                 android:textSize="14sp" />
 
             <TextView
@@ -65,7 +65,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="$0.00"
+                android:text="💰 0.000đ"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/holo_green_dark"
@@ -84,19 +84,43 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Date: 2024-01-01"
+                android:text="📅 Đặt: 2024-01-01"
                 android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvOrderDeliveryDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🚚 Giao: 2024-01-02"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:id="@+id/tvOrderStatus"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Status: Pending"
-                android:textSize="14sp"
-                android:gravity="end" />
+                android:text="⏳ Trạng thái: Pending"
+                android:textSize="14sp" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvOrderSpecialInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📝 Ghi chú: Không có"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/darker_gray" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -110,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="Edit"
+                android:text="✏️ Sửa"
                 android:textSize="12sp" />
 
             <Button
@@ -119,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:text="Delete"
+                android:text="🗑️ Xóa"
                 android:textSize="12sp"
                 android:backgroundTint="@android:color/holo_red_light" />
 

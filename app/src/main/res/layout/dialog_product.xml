@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Product Information"
+        android:text="🍰 Thông Tin Bánh"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -20,10 +20,10 @@
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etProductName"
+            android:id="@+id/etCakeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Product Name" />
+            android:hint="Tên bánh" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -33,10 +33,10 @@
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etProductDescription"
+            android:id="@+id/etCakeDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
+            android:hint="Mô tả bánh"
             android:inputType="textMultiLine" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -54,10 +54,10 @@
             android:layout_marginEnd="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etProductPrice"
+                android:id="@+id/etCakePrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Price"
+                android:hint="Giá (VNĐ)"
                 android:inputType="numberDecimal" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -69,11 +69,47 @@
             android:layout_marginStart="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etProductStock"
+                android:id="@+id/etCakeStock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Stock"
+                android:hint="Số lượng"
                 android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCakeCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Loại (Birthday, Wedding...)" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCakeSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Size (Small, Medium...)" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,10 +121,10 @@
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etProductCategory"
+            android:id="@+id/etCakeFlavor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Category" />
+            android:hint="Vị (Chocolate, Vanilla, Strawberry...)" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,20 +134,20 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnSaveProduct"
+            android:id="@+id/btnSaveCake"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Save" />
+            android:text="💾 Lưu" />
 
         <Button
-            android:id="@+id/btnCancelProduct"
+            android:id="@+id/btnCancelCake"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Cancel" />
+            android:text="❌ Hủy" />
 
     </LinearLayout>
 

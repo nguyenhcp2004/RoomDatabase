@@ -14,19 +14,19 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvProductName"
+            android:id="@+id/tvCakeName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Name"
+            android:text="🍰 Tên Bánh"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/tvProductDescription"
+            android:id="@+id/tvCakeDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Product Description"
+            android:text="Mô tả bánh ngọt thơm ngon"
             android:textSize="14sp"
             android:layout_marginTop="4dp" />
 
@@ -37,31 +37,56 @@
             android:layout_marginTop="4dp">
 
             <TextView
-                android:id="@+id/tvProductPrice"
+                android:id="@+id/tvCakePrice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="$0.00"
+                android:text="💰 0.000đ"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/holo_green_dark" />
 
             <TextView
-                android:id="@+id/tvProductStock"
+                android:id="@+id/tvCakeStock"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Stock: 0"
+                android:text="📦 Còn: 0"
+                android:textSize="14sp"
+                android:gravity="end" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tvCakeCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🏷️ Loại: Birthday"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvCakeSize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📏 Size: Medium"
                 android:textSize="14sp"
                 android:gravity="end" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvProductCategory"
+            android:id="@+id/tvCakeFlavor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Category"
+            android:text="🍓 Vị: Chocolate"
             android:textSize="14sp"
             android:layout_marginTop="2dp" />
 
@@ -72,21 +97,21 @@
             android:layout_marginTop="8dp">
 
             <Button
-                android:id="@+id/btnEditProduct"
+                android:id="@+id/btnEditCake"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="Edit"
+                android:text="✏️ Sửa"
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/btnDeleteProduct"
+                android:id="@+id/btnDeleteCake"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:text="Delete"
+                android:text="🗑️ Xóa"
                 android:textSize="12sp"
                 android:backgroundTint="@android:color/holo_red_light" />
 

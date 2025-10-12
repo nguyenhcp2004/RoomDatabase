@@ -19,11 +19,11 @@ public interface OrderDao {
     @Query("SELECT * FROM orders WHERE id = :id")
     Order getOrderById(int id);
     
-    @Query("SELECT * FROM orders WHERE userId = :userId")
-    List<Order> getOrdersByUserId(int userId);
+    @Query("SELECT * FROM orders WHERE customerId = :customerId")
+    List<Order> getOrdersByCustomerId(int customerId);
     
-    @Query("SELECT * FROM orders WHERE productId = :productId")
-    List<Order> getOrdersByProductId(int productId);
+    @Query("SELECT * FROM orders WHERE cakeId = :cakeId")
+    List<Order> getOrdersByCakeId(int cakeId);
     
     @Query("SELECT * FROM orders WHERE status = :status")
     List<Order> getOrdersByStatus(String status);
@@ -31,8 +31,11 @@ public interface OrderDao {
     @Query("SELECT * FROM orders WHERE orderDate = :orderDate")
     List<Order> getOrdersByDate(String orderDate);
     
-    @Query("SELECT * FROM orders WHERE userId = :userId AND productId = :productId")
-    List<Order> getOrdersByUserAndProduct(int userId, int productId);
+    @Query("SELECT * FROM orders WHERE deliveryDate = :deliveryDate")
+    List<Order> getOrdersByDeliveryDate(String deliveryDate);
+    
+    @Query("SELECT * FROM orders WHERE customerId = :customerId AND cakeId = :cakeId")
+    List<Order> getOrdersByCustomerAndCake(int customerId, int cakeId);
     
     @Insert
     void insertOrder(Order order);

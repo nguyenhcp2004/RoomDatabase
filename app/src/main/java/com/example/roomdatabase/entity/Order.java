@@ -9,43 +9,49 @@ import androidx.room.Index;
     tableName = "orders",
     foreignKeys = {
         @ForeignKey(
-            entity = User.class,
+            entity = Customer.class,
             parentColumns = "id",
-            childColumns = "userId",
+            childColumns = "customerId",
             onDelete = ForeignKey.CASCADE
         ),
         @ForeignKey(
-            entity = Product.class,
+            entity = Cake.class,
             parentColumns = "id",
-            childColumns = "productId",
+            childColumns = "cakeId",
             onDelete = ForeignKey.CASCADE
         )
     },
     indices = {
-        @Index("userId"),
-        @Index("productId")
+        @Index("customerId"),
+        @Index("cakeId")
     }
 )
 public class Order {
     @PrimaryKey(autoGenerate = true)
     private int id;
     
-    private int userId;
-    private int productId;
+    private int customerId;
+    private int cakeId;
     private int quantity;
     private double totalPrice;
     private String orderDate;
-    private String status;
+    private String deliveryDate;
+    private String status; // "Pending", "Confirmed", "Preparing", "Ready", "Delivered", "Cancelled"
+    private String specialInstructions;
+    private String deliveryAddress;
     
     public Order() {}
     
-    public Order(int userId, int productId, int quantity, double totalPrice, String orderDate, String status) {
-        this.userId = userId;
-        this.productId = productId;
+    public Order(int customerId, int cakeId, int quantity, double totalPrice, String orderDate, String deliveryDate, String status, String specialInstructions, String deliveryAddress) {
+        this.customerId = customerId;
+        this.cakeId = cakeId;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
         this.orderDate = orderDate;
+        this.deliveryDate = deliveryDate;
         this.status = status;
+        this.specialInstructions = specialInstructions;
+        this.deliveryAddress = deliveryAddress;
     }
     
     // Getters and Setters
@@ -57,20 +63,20 @@ public class Order {
         this.id = id;
     }
     
-    public int getUserId() {
-        return userId;
+    public int getCustomerId() {
+        return customerId;
     }
     
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
     
-    public int getProductId() {
-        return productId;
+    public int getCakeId() {
+        return cakeId;
     }
     
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setCakeId(int cakeId) {
+        this.cakeId = cakeId;
     }
     
     public int getQuantity() {
@@ -103,5 +109,29 @@ public class Order {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getDeliveryDate() {
+        return deliveryDate;
+    }
+    
+    public void setDeliveryDate(String deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+    
+    public String getSpecialInstructions() {
+        return specialInstructions;
+    }
+    
+    public void setSpecialInstructions(String specialInstructions) {
+        this.specialInstructions = specialInstructions;
+    }
+    
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+    
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 }

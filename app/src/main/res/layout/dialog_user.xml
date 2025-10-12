@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="User Information"
+        android:text="👤 Thông Tin Khách Hàng"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -20,10 +20,10 @@
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUserName"
+            android:id="@+id/etCustomerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Name" />
+            android:hint="Tên khách hàng" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -33,7 +33,7 @@
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUserEmail"
+            android:id="@+id/etCustomerEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
@@ -47,11 +47,25 @@
         android:layout_marginBottom="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUserPhone"
+            android:id="@+id/etCustomerPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Phone"
+            android:hint="Số điện thoại"
             android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etCustomerAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Địa chỉ"
+            android:inputType="textMultiLine" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,11 +75,10 @@
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUserAddress"
+            android:id="@+id/etCustomerType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Address"
-            android:inputType="textMultiLine" />
+            android:hint="Loại khách hàng (VIP, Regular, New)" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,20 +88,20 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnSaveUser"
+            android:id="@+id/btnSaveCustomer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:text="Save" />
+            android:text="💾 Lưu" />
 
         <Button
-            android:id="@+id/btnCancelUser"
+            android:id="@+id/btnCancelCustomer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Cancel" />
+            android:text="❌ Hủy" />
 
     </LinearLayout>
 

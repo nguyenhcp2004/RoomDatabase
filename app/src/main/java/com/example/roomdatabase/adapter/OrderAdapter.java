@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.roomdatabase.R;
 import com.example.roomdatabase.entity.Order;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
@@ -25,7 +26,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     }
     
     public OrderAdapter(List<Order> orders) {
-        this.orders = orders;
+        this.orders = orders != null ? orders : new ArrayList<>();
     }
     
     public void setOnOrderClickListener(OnOrderClickListener listener) {
@@ -56,30 +57,34 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     }
     
     class OrderViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvOrderId, tvOrderUserId, tvOrderProductId, tvOrderQuantity, tvOrderTotal, tvOrderDate, tvOrderStatus;
+        private TextView tvOrderId, tvOrderCustomerId, tvOrderCakeId, tvOrderQuantity, tvOrderTotal, tvOrderDate, tvOrderDeliveryDate, tvOrderStatus, tvOrderSpecialInstructions;
         private Button btnEditOrder, btnDeleteOrder;
         
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvOrderId = itemView.findViewById(R.id.tvOrderId);
-            tvOrderUserId = itemView.findViewById(R.id.tvOrderUserId);
-            tvOrderProductId = itemView.findViewById(R.id.tvOrderProductId);
+            tvOrderCustomerId = itemView.findViewById(R.id.tvOrderCustomerId);
+            tvOrderCakeId = itemView.findViewById(R.id.tvOrderCakeId);
             tvOrderQuantity = itemView.findViewById(R.id.tvOrderQuantity);
             tvOrderTotal = itemView.findViewById(R.id.tvOrderTotal);
             tvOrderDate = itemView.findViewById(R.id.tvOrderDate);
+            tvOrderDeliveryDate = itemView.findViewById(R.id.tvOrderDeliveryDate);
             tvOrderStatus = itemView.findViewById(R.id.tvOrderStatus);
+            tvOrderSpecialInstructions = itemView.findViewById(R.id.tvOrderSpecialInstructions);
             btnEditOrder = itemView.findViewById(R.id.btnEditOrder);
             btnDeleteOrder = itemView.findViewById(R.id.btnDeleteOrder);
         }
         
         public void bind(Order order) {
-            tvOrderId.setText("Order #" + order.getId());
-            tvOrderUserId.setText("User ID: " + order.getUserId());
-            tvOrderProductId.setText("Product ID: " + order.getProductId());
-            tvOrderQuantity.setText("Qty: " + order.getQuantity());
-            tvOrderTotal.setText("$" + String.format("%.2f", order.getTotalPrice()));
-            tvOrderDate.setText("Date: " + order.getOrderDate());
-            tvOrderStatus.setText("Status: " + order.getStatus());
+            tvOrderId.setText("📋 Đơn Hàng #" + order.getId());
+            tvOrderCustomerId.setText("👤 Khách: #" + order.getCustomerId());
+            tvOrderCakeId.setText("🍰 Bánh: #" + order.getCakeId());
+            tvOrderQuantity.setText("📦 SL: " + order.getQuantity());
+            tvOrderTotal.setText("💰 " + String.format("%.0f", order.getTotalPrice()) + "đ");
+            tvOrderDate.setText("📅 Đặt: " + order.getOrderDate());
+            tvOrderDeliveryDate.setText("🚚 Giao: " + (order.getDeliveryDate() != null ? order.getDeliveryDate() : "Chưa xác định"));
+            tvOrderStatus.setText("⏳ Trạng thái: " + order.getStatus());
+            tvOrderSpecialInstructions.setText("📝 Ghi chú: " + (order.getSpecialInstructions() != null && !order.getSpecialInstructions().isEmpty() ? order.getSpecialInstructions() : "Không có"));
             
             btnEditOrder.setOnClickListener(v -> {
                 if (listener != null) {

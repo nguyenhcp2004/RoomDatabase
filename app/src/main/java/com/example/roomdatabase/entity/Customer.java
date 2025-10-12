@@ -3,8 +3,8 @@ package com.example.roomdatabase.entity;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "users")
-public class User {
+@Entity(tableName = "customers")
+public class Customer {
     @PrimaryKey(autoGenerate = true)
     private int id;
     
@@ -12,14 +12,16 @@ public class User {
     private String email;
     private String phone;
     private String address;
+    private String customerType; // "VIP", "Regular", "New"
     
-    public User() {}
+    public Customer() {}
     
-    public User(String name, String email, String phone, String address) {
+    public Customer(String name, String email, String phone, String address, String customerType) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.address = address;
+        this.customerType = customerType;
     }
     
     // Getters and Setters
@@ -61,5 +63,13 @@ public class User {
     
     public void setAddress(String address) {
         this.address = address;
+    }
+    
+    public String getCustomerType() {
+        return customerType;
+    }
+    
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
     }
 }

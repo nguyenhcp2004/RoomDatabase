@@ -322,29 +322,133 @@ public class MainActivity extends AppCompatActivity {
             String address = etAddress.getText().toString().trim();
             String type = etType.getText().toString().trim();
             
+            // Validation cơ bản
             if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || type.isEmpty()) {
                 Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
             
-            if (customer == null) {
-                Customer newCustomer = new Customer(name, email, phone, address, type);
-                insertCustomer(newCustomer);
-            } else {
-                customer.setName(name);
-                customer.setEmail(email);
-                customer.setPhone(phone);
-                customer.setAddress(address);
-                customer.setCustomerType(type);
-                updateCustomer(customer);
+            // Validation tên (ít nhất 2 ký tự)
+            if (name.length() < 2) {
+                Toast.makeText(this, "Tên khách hàng phải có ít nhất 2 ký tự", Toast.LENGTH_SHORT).show();
+                return;
             }
             
-            dialog.dismiss();
+            // Validation email format
+            if (!isValidEmail(email)) {
+                Toast.makeText(this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Validation số điện thoại (chỉ số, 10-11 chữ số)
+            if (!isValidPhone(phone)) {
+                Toast.makeText(this, "Số điện thoại phải có 10-11 chữ số", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Validation địa chỉ (ít nhất 10 ký tự)
+            if (address.length() < 10) {
+                Toast.makeText(this, "Địa chỉ phải có ít nhất 10 ký tự", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Validation loại khách hàng
+            if (!isValidCustomerType(type)) {
+                Toast.makeText(this, "Loại khách hàng không hợp lệ (VIP, Regular, New)", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Kiểm tra email trùng lặp (chỉ khi thêm mới)
+            if (customer == null) {
+                checkEmailExistsAndInsert(email, name, phone, address, type, dialog);
+            } else {
+                // Khi cập nhật, chỉ kiểm tra email trùng nếu email thay đổi
+                if (!customer.getEmail().equals(email)) {
+                    checkEmailExistsAndUpdate(customer, email, name, phone, address, type, dialog);
+                } else {
+                    customer.setName(name);
+                    customer.setEmail(email);
+                    customer.setPhone(phone);
+                    customer.setAddress(address);
+                    customer.setCustomerType(type);
+                    updateCustomer(customer);
+                    dialog.dismiss();
+                }
+            }
         });
         
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         
         dialog.show();
+    }
+    
+    // Validation methods
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return email.matches(emailPattern);
+    }
+    
+    private boolean isValidPhone(String phone) {
+        // Chỉ chứa số và có độ dài 10-11 chữ số
+        return phone.matches("^[0-9]{10,11}$");
+    }
+    
+    private boolean isValidCustomerType(String type) {
+        String[] validTypes = {"VIP", "Regular", "New"};
+        for (String validType : validTypes) {
+            if (validType.equalsIgnoreCase(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Kiểm tra email trùng lặp khi thêm mới
+    private void checkEmailExistsAndInsert(String email, String name, String phone, String address, String type, AlertDialog dialog) {
+        executorService.execute(() -> {
+            try {
+                Customer existingCustomer = customerDao.getCustomerByEmail(email).getValue();
+                runOnUiThread(() -> {
+                    if (existingCustomer != null) {
+                        Toast.makeText(MainActivity.this, "❌ Email này đã tồn tại trong hệ thống!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Customer newCustomer = new Customer(name, email, phone, address, type);
+                        insertCustomer(newCustomer);
+                        dialog.dismiss();
+                    }
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi kiểm tra email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+    
+    // Kiểm tra email trùng lặp khi cập nhật
+    private void checkEmailExistsAndUpdate(Customer customer, String email, String name, String phone, String address, String type, AlertDialog dialog) {
+        executorService.execute(() -> {
+            try {
+                Customer existingCustomer = customerDao.getCustomerByEmail(email).getValue();
+                runOnUiThread(() -> {
+                    if (existingCustomer != null && existingCustomer.getId() != customer.getId()) {
+                        Toast.makeText(MainActivity.this, "❌ Email này đã tồn tại trong hệ thống!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        customer.setName(name);
+                        customer.setEmail(email);
+                        customer.setPhone(phone);
+                        customer.setAddress(address);
+                        customer.setCustomerType(type);
+                        updateCustomer(customer);
+                        dialog.dismiss();
+                    }
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi kiểm tra email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
     
     private void insertCustomer(Customer customer) {

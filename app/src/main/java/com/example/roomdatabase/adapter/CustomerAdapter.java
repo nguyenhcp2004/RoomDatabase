@@ -43,6 +43,7 @@ public class CustomerAdapter extends RecyclerView.Adapter<CustomerAdapter.Custom
     @Override
     public void onBindViewHolder(@NonNull CustomerViewHolder holder, int position) {
         Customer customer = customers.get(position);
+        if (customer == null) return;
         holder.bind(customer);
     }
     

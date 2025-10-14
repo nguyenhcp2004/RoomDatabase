@@ -1,7 +1,6 @@
 package com.example.roomdatabase;
 
 import android.app.AlertDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.example.roomdatabase.adapter.CustomerAdapter;
 import com.example.roomdatabase.adapter.CakeAdapter;
@@ -56,6 +59,14 @@ public class MainActivity extends AppCompatActivity {
     private List<Order> orders = new ArrayList<>();
     
     private int currentTab = 0; // 0: Customers, 1: Cakes, 2: Orders
+    
+    // ExecutorService để thực hiện các thao tác database
+    private ExecutorService executorService;
+    
+    // LiveData observers
+    private LiveData<List<Customer>> customersLiveData;
+    private LiveData<List<Cake>> cakesLiveData;
+    private LiveData<List<Order>> ordersLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,11 +119,68 @@ public class MainActivity extends AppCompatActivity {
             
             if (customerDao == null || cakeDao == null || orderDao == null) {
                 Toast.makeText(this, "Không thể khởi tạo DAO", Toast.LENGTH_SHORT).show();
+                return;
             }
+            
+            // Khởi tạo ExecutorService
+            executorService = Executors.newFixedThreadPool(4);
+            
+            // Khởi tạo LiveData
+            customersLiveData = customerDao.getAllCustomers();
+            cakesLiveData = cakeDao.getAllCakes();
+            ordersLiveData = orderDao.getAllOrders();
+            
+            // Thiết lập observers
+            setupObservers();
+            
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi khởi tạo database: " + e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+    
+    private void setupObservers() {
+        // Observer cho customers
+        customersLiveData.observe(this, new Observer<List<Customer>>() {
+            @Override
+            public void onChanged(List<Customer> customerList) {
+                if (customerList != null) {
+                    customers.clear();
+                    customers.addAll(customerList);
+                    if (customerAdapter != null) {
+                        customerAdapter.updateCustomers(customers);
+                    }
+                }
+            }
+        });
+        
+        // Observer cho cakes
+        cakesLiveData.observe(this, new Observer<List<Cake>>() {
+            @Override
+            public void onChanged(List<Cake> cakeList) {
+                if (cakeList != null) {
+                    cakes.clear();
+                    cakes.addAll(cakeList);
+                    if (cakeAdapter != null) {
+                        cakeAdapter.updateCakes(cakes);
+                    }
+                }
+            }
+        });
+        
+        // Observer cho orders
+        ordersLiveData.observe(this, new Observer<List<Order>>() {
+            @Override
+            public void onChanged(List<Order> orderList) {
+                if (orderList != null) {
+                    orders.clear();
+                    orders.addAll(orderList);
+                    if (orderAdapter != null) {
+                        orderAdapter.updateOrders(orders);
+                    }
+                }
+            }
+        });
     }
     
     private void setupTabs() {
@@ -217,42 +285,12 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void loadData() {
-        if (customerDao == null || cakeDao == null || orderDao == null) {
-            Toast.makeText(this, "DAO chưa được khởi tạo", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        switch (currentTab) {
-            case 0:
-                loadCustomers();
-                break;
-            case 1:
-                loadCakes();
-                break;
-            case 2:
-                loadOrders();
-                break;
-        }
+        // Với LiveData, dữ liệu sẽ tự động cập nhật thông qua observers
+        // Không cần gọi các phương thức load riêng lẻ nữa
+        Toast.makeText(this, "Dữ liệu đã được cập nhật tự động", Toast.LENGTH_SHORT).show();
     }
     
     // Customer CRUD Operations
-    private void loadCustomers() {
-        new AsyncTask<Void, Void, List<Customer>>() {
-            @Override
-            protected List<Customer> doInBackground(Void... voids) {
-                return customerDao.getAllCustomers();
-            }
-            
-            @Override
-            protected void onPostExecute(List<Customer> customerList) {
-                customers.clear();
-                customers.addAll(customerList);
-                if (customerAdapter != null) {
-                    customerAdapter.updateCustomers(customers);
-                }
-            }
-        }.execute();
-    }
     
     private void showCustomerDialog(Customer customer) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -310,35 +348,33 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void insertCustomer(Customer customer) {
-        new AsyncTask<Customer, Void, Void>() {
-            @Override
-            protected Void doInBackground(Customer... customers) {
-                customerDao.insertCustomer(customers[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                customerDao.insertCustomer(customer);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Thêm khách hàng thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi thêm khách hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Thêm khách hàng thành công!", Toast.LENGTH_SHORT).show();
-                loadCustomers();
-            }
-        }.execute(customer);
+        });
     }
     
     private void updateCustomer(Customer customer) {
-        new AsyncTask<Customer, Void, Void>() {
-            @Override
-            protected Void doInBackground(Customer... customers) {
-                customerDao.updateCustomer(customers[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                customerDao.updateCustomer(customer);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Cập nhật khách hàng thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi cập nhật khách hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Cập nhật khách hàng thành công!", Toast.LENGTH_SHORT).show();
-                loadCustomers();
-            }
-        }.execute(customer);
+        });
     }
     
     private void deleteCustomer(Customer customer) {
@@ -346,42 +382,24 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("🗑️ Xóa Khách Hàng")
                 .setMessage("Bạn có chắc chắn muốn xóa khách hàng này?")
                 .setPositiveButton("Có", (dialog, which) -> {
-                    new AsyncTask<Customer, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Customer... customers) {
-                            customerDao.deleteCustomer(customers[0]);
-                            return null;
+                    executorService.execute(() -> {
+                        try {
+                            customerDao.deleteCustomer(customer);
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "✅ Xóa khách hàng thành công!", Toast.LENGTH_SHORT).show();
+                            });
+                        } catch (Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "❌ Lỗi xóa khách hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                         }
-                        
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            Toast.makeText(MainActivity.this, "✅ Xóa khách hàng thành công!", Toast.LENGTH_SHORT).show();
-                            loadCustomers();
-                        }
-                    }.execute(customer);
+                    });
                 })
                 .setNegativeButton("Không", null)
                 .show();
     }
     
     // Cake CRUD Operations
-    private void loadCakes() {
-        new AsyncTask<Void, Void, List<Cake>>() {
-            @Override
-            protected List<Cake> doInBackground(Void... voids) {
-                return cakeDao.getAllCakes();
-            }
-            
-            @Override
-            protected void onPostExecute(List<Cake> cakeList) {
-                cakes.clear();
-                cakes.addAll(cakeList);
-                if (cakeAdapter != null) {
-                    cakeAdapter.updateCakes(cakes);
-                }
-            }
-        }.execute();
-    }
     
     private void showCakeDialog(Cake cake) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -454,35 +472,33 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void insertCake(Cake cake) {
-        new AsyncTask<Cake, Void, Void>() {
-            @Override
-            protected Void doInBackground(Cake... cakes) {
-                cakeDao.insertCake(cakes[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                cakeDao.insertCake(cake);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Thêm bánh thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi thêm bánh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Thêm bánh thành công!", Toast.LENGTH_SHORT).show();
-                loadCakes();
-            }
-        }.execute(cake);
+        });
     }
     
     private void updateCake(Cake cake) {
-        new AsyncTask<Cake, Void, Void>() {
-            @Override
-            protected Void doInBackground(Cake... cakes) {
-                cakeDao.updateCake(cakes[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                cakeDao.updateCake(cake);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Cập nhật bánh thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi cập nhật bánh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Cập nhật bánh thành công!", Toast.LENGTH_SHORT).show();
-                loadCakes();
-            }
-        }.execute(cake);
+        });
     }
     
     private void deleteCake(Cake cake) {
@@ -490,42 +506,24 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("🗑️ Xóa Bánh")
                 .setMessage("Bạn có chắc chắn muốn xóa bánh này?")
                 .setPositiveButton("Có", (dialog, which) -> {
-                    new AsyncTask<Cake, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Cake... cakes) {
-                            cakeDao.deleteCake(cakes[0]);
-                            return null;
+                    executorService.execute(() -> {
+                        try {
+                            cakeDao.deleteCake(cake);
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "✅ Xóa bánh thành công!", Toast.LENGTH_SHORT).show();
+                            });
+                        } catch (Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "❌ Lỗi xóa bánh: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                         }
-                        
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            Toast.makeText(MainActivity.this, "✅ Xóa bánh thành công!", Toast.LENGTH_SHORT).show();
-                            loadCakes();
-                        }
-                    }.execute(cake);
+                    });
                 })
                 .setNegativeButton("Không", null)
                 .show();
     }
     
     // Order CRUD Operations
-    private void loadOrders() {
-        new AsyncTask<Void, Void, List<Order>>() {
-            @Override
-            protected List<Order> doInBackground(Void... voids) {
-                return orderDao.getAllOrders();
-            }
-            
-            @Override
-            protected void onPostExecute(List<Order> orderList) {
-                orders.clear();
-                orders.addAll(orderList);
-                if (orderAdapter != null) {
-                    orderAdapter.updateOrders(orders);
-                }
-            }
-        }.execute();
-    }
     
     private void showOrderDialog(Order order) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -613,35 +611,33 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void insertOrder(Order order) {
-        new AsyncTask<Order, Void, Void>() {
-            @Override
-            protected Void doInBackground(Order... orders) {
-                orderDao.insertOrder(orders[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                orderDao.insertOrder(order);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Thêm đơn hàng thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi thêm đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Thêm đơn hàng thành công!", Toast.LENGTH_SHORT).show();
-                loadOrders();
-            }
-        }.execute(order);
+        });
     }
     
     private void updateOrder(Order order) {
-        new AsyncTask<Order, Void, Void>() {
-            @Override
-            protected Void doInBackground(Order... orders) {
-                orderDao.updateOrder(orders[0]);
-                return null;
+        executorService.execute(() -> {
+            try {
+                orderDao.updateOrder(order);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "✅ Cập nhật đơn hàng thành công!", Toast.LENGTH_SHORT).show();
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi cập nhật đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                Toast.makeText(MainActivity.this, "✅ Cập nhật đơn hàng thành công!", Toast.LENGTH_SHORT).show();
-                loadOrders();
-            }
-        }.execute(order);
+        });
     }
     
     private void deleteOrder(Order order) {
@@ -649,19 +645,18 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("🗑️ Xóa Đơn Hàng")
                 .setMessage("Bạn có chắc chắn muốn xóa đơn hàng này?")
                 .setPositiveButton("Có", (dialog, which) -> {
-                    new AsyncTask<Order, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Order... orders) {
-                            orderDao.deleteOrder(orders[0]);
-                            return null;
+                    executorService.execute(() -> {
+                        try {
+                            orderDao.deleteOrder(order);
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "✅ Xóa đơn hàng thành công!", Toast.LENGTH_SHORT).show();
+                            });
+                        } catch (Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(MainActivity.this, "❌ Lỗi xóa đơn hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                         }
-                        
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            Toast.makeText(MainActivity.this, "✅ Xóa đơn hàng thành công!", Toast.LENGTH_SHORT).show();
-                            loadOrders();
-                        }
-                    }.execute(order);
+                    });
                 })
                 .setNegativeButton("Không", null)
                 .show();
@@ -674,39 +669,43 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    // Add sample customers
-                    if (customerDao.getAllCustomers().isEmpty()) {
-                        customerDao.insertCustomers(
-                            new Customer("Nguyễn Văn An", "an.nguyen@email.com", "0123456789", "123 Đường ABC, Quận 1, TP.HCM", "VIP"),
-                            new Customer("Trần Thị Bình", "binh.tran@email.com", "0987654321", "456 Đường XYZ, Quận 2, TP.HCM", "Regular"),
-                            new Customer("Lê Văn Cường", "cuong.le@email.com", "0369852147", "789 Đường DEF, Quận 3, TP.HCM", "New")
-                        );
-                    }
-                    
-                    // Add sample cakes
-                    if (cakeDao.getAllCakes().isEmpty()) {
-                        cakeDao.insertCakes(
-                            new Cake("Bánh Sinh Nhật Chocolate", "Bánh sinh nhật chocolate thơm ngon với kem tươi", 250000, 10, "Birthday", "Medium", "Chocolate"),
-                            new Cake("Bánh Cưới Vanilla", "Bánh cưới vanilla sang trọng cho ngày đặc biệt", 500000, 5, "Wedding", "Large", "Vanilla"),
-                            new Cake("Bánh Kỷ Niệm Strawberry", "Bánh kỷ niệm vị dâu tây ngọt ngào", 180000, 15, "Anniversary", "Small", "Strawberry"),
-                            new Cake("Bánh Tiramisu", "Bánh tiramisu Ý truyền thống", 320000, 8, "Custom", "Medium", "Mixed"),
-                            new Cake("Bánh Red Velvet", "Bánh red velvet với cream cheese", 280000, 12, "Birthday", "Medium", "Mixed")
-                        );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        executorService.execute(() -> {
+            try {
+                // Kiểm tra và thêm sample customers
+                List<Customer> existingCustomers = customerDao.getAllCustomers().getValue();
+                if (existingCustomers == null || existingCustomers.isEmpty()) {
+                    customerDao.insertCustomers(
+                        new Customer("Nguyễn Văn An", "an.nguyen@email.com", "0123456789", "123 Đường ABC, Quận 1, TP.HCM", "VIP"),
+                        new Customer("Trần Thị Bình", "binh.tran@email.com", "0987654321", "456 Đường XYZ, Quận 2, TP.HCM", "Regular"),
+                        new Customer("Lê Văn Cường", "cuong.le@email.com", "0369852147", "789 Đường DEF, Quận 3, TP.HCM", "New")
+                    );
                 }
-                return null;
+                
+                // Kiểm tra và thêm sample cakes
+                List<Cake> existingCakes = cakeDao.getAllCakes().getValue();
+                if (existingCakes == null || existingCakes.isEmpty()) {
+                    cakeDao.insertCakes(
+                        new Cake("Bánh Sinh Nhật Chocolate", "Bánh sinh nhật chocolate thơm ngon với kem tươi", 250000, 10, "Birthday", "Medium", "Chocolate"),
+                        new Cake("Bánh Cưới Vanilla", "Bánh cưới vanilla sang trọng cho ngày đặc biệt", 500000, 5, "Wedding", "Large", "Vanilla"),
+                        new Cake("Bánh Kỷ Niệm Strawberry", "Bánh kỷ niệm vị dâu tây ngọt ngào", 180000, 15, "Anniversary", "Small", "Strawberry"),
+                        new Cake("Bánh Tiramisu", "Bánh tiramisu Ý truyền thống", 320000, 8, "Custom", "Medium", "Mixed"),
+                        new Cake("Bánh Red Velvet", "Bánh red velvet với cream cheese", 280000, 12, "Birthday", "Medium", "Mixed")
+                    );
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "❌ Lỗi thêm dữ liệu mẫu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+                e.printStackTrace();
             }
-            
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                loadData();
-            }
-        }.execute();
+        });
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }

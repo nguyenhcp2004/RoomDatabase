@@ -20,35 +20,43 @@
         android:orientation="horizontal"
         android:layout_marginBottom="8dp">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etOrderCustomerId"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="ID Khách hàng"
-                android:inputType="number" />
+                android:text="Khách hàng" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <Spinner
+                android:id="@+id/spOrderCustomer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <com.google.android.material.textfield.TextInputLayout
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="8dp">
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etOrderCakeId"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="ID Bánh"
-                android:inputType="number" />
+                android:text="Bánh" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <Spinner
+                android:id="@+id/spOrderCake"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -99,7 +107,10 @@
             android:id="@+id/etOrderDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ngày đặt (YYYY-MM-DD)" />
+            android:hint="Ngày đặt"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="date" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +123,10 @@
             android:id="@+id/etOrderDeliveryDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Ngày giao (YYYY-MM-DD)" />
+            android:hint="Ngày giao"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="date" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

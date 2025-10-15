@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.app.DatePickerDialog;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -23,6 +25,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -642,8 +645,8 @@ public class MainActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_order, null);
         builder.setView(view);
         
-        EditText etCustomerId = view.findViewById(R.id.etOrderCustomerId);
-        EditText etCakeId = view.findViewById(R.id.etOrderCakeId);
+        Spinner spCustomer = view.findViewById(R.id.spOrderCustomer);
+        Spinner spCake = view.findViewById(R.id.spOrderCake);
         EditText etQuantity = view.findViewById(R.id.etOrderQuantity);
         EditText etTotal = view.findViewById(R.id.etOrderTotal);
         EditText etDate = view.findViewById(R.id.etOrderDate);
@@ -654,9 +657,42 @@ public class MainActivity extends AppCompatActivity {
         Button btnSave = view.findViewById(R.id.btnSaveOrder);
         Button btnCancel = view.findViewById(R.id.btnCancelOrder);
         
+        // Chuẩn bị dữ liệu spinner khách hàng
+        List<Customer> localCustomers = new ArrayList<>(customers != null ? customers : new ArrayList<>());
+        List<String> customerNames = new ArrayList<>();
+        for (Customer c : localCustomers) {
+            customerNames.add(c.getName());
+        }
+        ArrayAdapter<String> customerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, customerNames);
+        customerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCustomer.setAdapter(customerAdapter);
+
+        // Chuẩn bị dữ liệu spinner bánh
+        List<Cake> localCakes = new ArrayList<>(cakes != null ? cakes : new ArrayList<>());
+        List<String> cakeNames = new ArrayList<>();
+        for (Cake c : localCakes) {
+            cakeNames.add(c.getName());
+        }
+        ArrayAdapter<String> cakeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, cakeNames);
+        cakeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCake.setAdapter(cakeAdapter);
+
         if (order != null) {
-            etCustomerId.setText(String.valueOf(order.getCustomerId()));
-            etCakeId.setText(String.valueOf(order.getCakeId()));
+            // preset selection theo customerId của order
+            if (localCustomers != null && !localCustomers.isEmpty()) {
+                int idx = 0;
+                for (int i = 0; i < localCustomers.size(); i++) {
+                    if (localCustomers.get(i).getId() == order.getCustomerId()) { idx = i; break; }
+                }
+                spCustomer.setSelection(idx);
+            }
+            if (localCakes != null && !localCakes.isEmpty()) {
+                int idxCake = 0;
+                for (int i = 0; i < localCakes.size(); i++) {
+                    if (localCakes.get(i).getId() == order.getCakeId()) { idxCake = i; break; }
+                }
+                spCake.setSelection(idxCake);
+            }
             etQuantity.setText(String.valueOf(order.getQuantity()));
             etTotal.setText(String.valueOf(order.getTotalPrice()));
             etDate.setText(order.getOrderDate());
@@ -670,12 +706,30 @@ public class MainActivity extends AppCompatActivity {
             etDate.setText(currentDate);
             etStatus.setText("Pending");
         }
+
+        // Date pickers cho ngày đặt và ngày giao
+        View.OnClickListener dateClickListener = v -> {
+            final Calendar cal = Calendar.getInstance();
+            int y = cal.get(Calendar.YEAR), m = cal.get(Calendar.MONTH), d = cal.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog dp = new DatePickerDialog(this, (view1, year, month, dayOfMonth) -> {
+                String mm = String.format(Locale.getDefault(), "%02d", month + 1);
+                String dd = String.format(Locale.getDefault(), "%02d", dayOfMonth);
+                ((EditText) v).setText(year + "-" + mm + "-" + dd);
+            }, y, m, d);
+            dp.show();
+        };
+        etDate.setOnClickListener(dateClickListener);
+        etDeliveryDate.setOnClickListener(dateClickListener);
         
         AlertDialog dialog = builder.create();
         
         btnSave.setOnClickListener(v -> {
-            String customerIdStr = etCustomerId.getText().toString().trim();
-            String cakeIdStr = etCakeId.getText().toString().trim();
+            // Lấy customerId từ spinner
+            int selectedPos = spCustomer.getSelectedItemPosition();
+            String customerIdStr = (selectedPos >= 0 && selectedPos < localCustomers.size()) ? String.valueOf(localCustomers.get(selectedPos).getId()) : "";
+            // Lấy cakeId từ spinner
+            int selectedCakePos = spCake.getSelectedItemPosition();
+            String cakeIdStr = (selectedCakePos >= 0 && selectedCakePos < localCakes.size()) ? String.valueOf(localCakes.get(selectedCakePos).getId()) : "";
             String quantityStr = etQuantity.getText().toString().trim();
             String totalStr = etTotal.getText().toString().trim();
             String date = etDate.getText().toString().trim();

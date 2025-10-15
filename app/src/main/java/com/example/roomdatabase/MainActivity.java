@@ -295,9 +295,7 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void loadData() {
-        // Với LiveData, dữ liệu sẽ tự động cập nhật thông qua observers
-        // Không cần gọi các phương thức load riêng lẻ nữa
-        Toast.makeText(this, "Dữ liệu đã được cập nhật tự động", Toast.LENGTH_SHORT).show();
+        // Với LiveData, dữ liệu tự động cập nhật thông qua observers
     }
     
     // Customer CRUD Operations

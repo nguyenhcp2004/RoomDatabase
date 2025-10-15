@@ -69,18 +69,18 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:text="Loại khách hàng"
+        android:layout_marginBottom="4dp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etCustomerType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Loại khách hàng (VIP, Regular, New)" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <Spinner
+        android:id="@+id/spCustomerType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/customer_types"
+        android:layout_marginBottom="16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

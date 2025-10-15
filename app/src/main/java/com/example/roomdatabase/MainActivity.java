@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -304,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         EditText etEmail = view.findViewById(R.id.etCustomerEmail);
         EditText etPhone = view.findViewById(R.id.etCustomerPhone);
         EditText etAddress = view.findViewById(R.id.etCustomerAddress);
-        EditText etType = view.findViewById(R.id.etCustomerType);
+        Spinner spType = view.findViewById(R.id.spCustomerType);
         Button btnSave = view.findViewById(R.id.btnSaveCustomer);
         Button btnCancel = view.findViewById(R.id.btnCancelCustomer);
         
@@ -313,7 +314,11 @@ public class MainActivity extends AppCompatActivity {
             etEmail.setText(customer.getEmail());
             etPhone.setText(customer.getPhone());
             etAddress.setText(customer.getAddress());
-            etType.setText(customer.getCustomerType());
+            // preset selection theo customerType
+            String[] types = {"VIP", "Regular", "New"};
+            int sel = 1; // default Regular
+            for (int i = 0; i < types.length; i++) if (types[i].equalsIgnoreCase(customer.getCustomerType())) { sel = i; break; }
+            spType.setSelection(sel);
         }
         
         AlertDialog dialog = builder.create();
@@ -323,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
             String email = etEmail.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
             String address = etAddress.getText().toString().trim();
-            String type = etType.getText().toString().trim();
+            String type = spType.getSelectedItem() != null ? spType.getSelectedItem().toString() : "";
             
             // Validation cơ bản
             if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || type.isEmpty()) {

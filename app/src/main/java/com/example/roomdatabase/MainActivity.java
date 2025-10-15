@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.app.DatePickerDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -651,7 +654,7 @@ public class MainActivity extends AppCompatActivity {
         EditText etTotal = view.findViewById(R.id.etOrderTotal);
         EditText etDate = view.findViewById(R.id.etOrderDate);
         EditText etDeliveryDate = view.findViewById(R.id.etOrderDeliveryDate);
-        EditText etStatus = view.findViewById(R.id.etOrderStatus);
+        Spinner spStatus = view.findViewById(R.id.spOrderStatus);
         EditText etInstructions = view.findViewById(R.id.etOrderSpecialInstructions);
         EditText etAddress = view.findViewById(R.id.etOrderDeliveryAddress);
         Button btnSave = view.findViewById(R.id.btnSaveOrder);
@@ -677,6 +680,33 @@ public class MainActivity extends AppCompatActivity {
         cakeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCake.setAdapter(cakeAdapter);
 
+        // Helper: cập nhật tổng tiền = price * quantity
+        Runnable updateTotal = () -> {
+            try {
+                int pos = spCake.getSelectedItemPosition();
+                int qty = Integer.parseInt(etQuantity.getText().toString().trim().isEmpty() ? "0" : etQuantity.getText().toString().trim());
+                double price = 0.0;
+                if (pos >= 0 && pos < localCakes.size()) {
+                    price = localCakes.get(pos).getPrice();
+                }
+                double totalVal = price * Math.max(qty, 0);
+                etTotal.setText(String.valueOf(totalVal));
+            } catch (Exception ignored) {}
+        };
+
+        // Tự động tính total khi chọn bánh
+        spCake.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view1, int position, long id) { updateTotal.run(); }
+            @Override public void onNothingSelected(AdapterView<?> parent) { updateTotal.run(); }
+        });
+
+        // Tự động tính total khi thay đổi số lượng
+        etQuantity.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) { updateTotal.run(); }
+        });
+
         if (order != null) {
             // preset selection theo customerId của order
             if (localCustomers != null && !localCustomers.isEmpty()) {
@@ -697,14 +727,18 @@ public class MainActivity extends AppCompatActivity {
             etTotal.setText(String.valueOf(order.getTotalPrice()));
             etDate.setText(order.getOrderDate());
             etDeliveryDate.setText(order.getDeliveryDate());
-            etStatus.setText(order.getStatus());
+            // preset status
+            String[] statuses = getResources().getStringArray(R.array.order_statuses);
+            int sIdx = 0;
+            for (int i = 0; i < statuses.length; i++) if (statuses[i].equalsIgnoreCase(order.getStatus())) { sIdx = i; break; }
+            spStatus.setSelection(sIdx);
             etInstructions.setText(order.getSpecialInstructions());
             etAddress.setText(order.getDeliveryAddress());
         } else {
             // Set default values for new orders
             String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             etDate.setText(currentDate);
-            etStatus.setText("Pending");
+            spStatus.setSelection(0);
         }
 
         // Date pickers cho ngày đặt và ngày giao
@@ -716,6 +750,16 @@ public class MainActivity extends AppCompatActivity {
                 String dd = String.format(Locale.getDefault(), "%02d", dayOfMonth);
                 ((EditText) v).setText(year + "-" + mm + "-" + dd);
             }, y, m, d);
+            // minDate: ngày đặt không trước hôm nay; ngày giao không trước ngày đặt
+            if (v.getId() == R.id.etOrderDate) {
+                dp.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+            } else if (v.getId() == R.id.etOrderDeliveryDate) {
+                try {
+                    SimpleDateFormat sdfMin = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    Date base = sdfMin.parse(etDate.getText().toString().trim());
+                    if (base != null) dp.getDatePicker().setMinDate(base.getTime());
+                } catch (Exception ignored) {}
+            }
             dp.show();
         };
         etDate.setOnClickListener(dateClickListener);
@@ -734,11 +778,28 @@ public class MainActivity extends AppCompatActivity {
             String totalStr = etTotal.getText().toString().trim();
             String date = etDate.getText().toString().trim();
             String deliveryDate = etDeliveryDate.getText().toString().trim();
-            String status = etStatus.getText().toString().trim();
+            String status = spStatus.getSelectedItem() != null ? spStatus.getSelectedItem().toString() : "";
             String instructions = etInstructions.getText().toString().trim();
             String address = etAddress.getText().toString().trim();
             
-            if (customerIdStr.isEmpty() || cakeIdStr.isEmpty() || quantityStr.isEmpty() || totalStr.isEmpty() || date.isEmpty() || status.isEmpty()) {
+            // Kiểm tra danh sách và lựa chọn bắt buộc
+            if (localCustomers.isEmpty()) {
+                Toast.makeText(this, "Chưa có khách hàng để chọn", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (localCakes.isEmpty()) {
+                Toast.makeText(this, "Chưa có bánh để chọn", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (customerIdStr == null || customerIdStr.isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn khách hàng", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (cakeIdStr.isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn bánh", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (quantityStr.isEmpty() || totalStr.isEmpty() || date.isEmpty() || status.isEmpty()) {
                 Toast.makeText(this, "Vui lòng điền đầy đủ thông tin bắt buộc", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -748,6 +809,17 @@ public class MainActivity extends AppCompatActivity {
                 int cakeId = Integer.parseInt(cakeIdStr);
                 int quantity = Integer.parseInt(quantityStr);
                 double total = Double.parseDouble(totalStr);
+
+                // Validate ngày giao không trước ngày đặt
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                if (!deliveryDate.isEmpty()) {
+                    Date d1 = sdf.parse(date);
+                    Date d2 = sdf.parse(deliveryDate);
+                    if (d1 != null && d2 != null && d2.before(d1)) {
+                        Toast.makeText(this, "Ngày giao không được trước ngày đặt", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 
                 if (order == null) {
                     Order newOrder = new Order(customerId, cakeId, quantity, total, date, deliveryDate, status, instructions, address);
@@ -766,8 +838,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 
                 dialog.dismiss();
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Vui lòng nhập số hợp lệ", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "Dữ liệu nhập không hợp lệ", Toast.LENGTH_SHORT).show();
             }
         });
         

@@ -35,7 +35,8 @@
             <Spinner
                 android:id="@+id/spOrderCustomer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:prompt="@string/app_name" />
 
         </LinearLayout>
 
@@ -54,7 +55,8 @@
             <Spinner
                 android:id="@+id/spOrderCake"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:prompt="@string/app_name" />
 
         </LinearLayout>
 
@@ -130,18 +132,18 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:text="Trạng thái"
+        android:layout_marginBottom="4dp" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etOrderStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Trạng thái (Pending, Confirmed, Ready...)" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <Spinner
+        android:id="@+id/spOrderStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/order_statuses"
+        android:layout_marginBottom="8dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

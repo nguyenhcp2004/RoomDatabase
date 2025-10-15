@@ -5,4 +5,12 @@
         <item>Regular</item>
         <item>New</item>
     </string-array>
+    <string-array name="order_statuses">
+        <item>Pending</item>
+        <item>Confirmed</item>
+        <item>Processing</item>
+        <item>Ready</item>
+        <item>Delivered</item>
+        <item>Cancelled</item>
+    </string-array>
 </resources>

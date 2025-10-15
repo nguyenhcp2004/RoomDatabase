@@ -14,7 +14,7 @@ import com.example.roomdatabase.entity.Order;
 
 @Database(
     entities = {Customer.class, Cake.class, Order.class},
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -32,8 +32,10 @@ public abstract class AppDatabase extends RoomDatabase {
                 AppDatabase.class,
                 "room_database"
             )
-            .addMigrations(Migrations.MIGRATION_1_2)
-            .fallbackToDestructiveMigration()
+            .addMigrations(
+                Migrations.MIGRATION_1_2,
+                Migrations.MIGRATION_2_3
+            )
             .build();
         }
         return INSTANCE;

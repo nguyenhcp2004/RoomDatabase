@@ -13,6 +13,7 @@ public class Customer {
     private String phone;
     private String address;
     private String customerType; // "VIP", "Regular", "New"
+    private String bio;
     
     public Customer() {}
     
@@ -22,6 +23,7 @@ public class Customer {
         this.phone = phone;
         this.address = address;
         this.customerType = customerType;
+        this.bio = null; // bio là cột mới, để null mặc định
     }
     
     // Getters and Setters
@@ -71,5 +73,13 @@ public class Customer {
     
     public void setCustomerType(String customerType) {
         this.customerType = customerType;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 }

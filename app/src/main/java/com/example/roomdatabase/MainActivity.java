@@ -103,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         btnAdd = findViewById(R.id.btnAdd);
         btnRefresh = findViewById(R.id.btnRefresh);
+        if (btnRefresh != null) {
+            btnRefresh.setVisibility(View.GONE);
+        }
     }
     
     private void initDatabase() {
@@ -281,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         
-        btnRefresh.setOnClickListener(v -> loadData());
+        // Nút refresh đã bị ẩn và vô hiệu hóa
     }
     
     private void loadData() {

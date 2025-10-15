@@ -80,7 +80,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             tvOrderCustomerId.setText("👤 Khách: #" + order.getCustomerId());
             tvOrderCakeId.setText("🍰 Bánh: #" + order.getCakeId());
             tvOrderQuantity.setText("📦 SL: " + order.getQuantity());
-            tvOrderTotal.setText("💰 " + String.format("%.0f", order.getTotalPrice()) + "đ");
+            java.util.Locale viVN = new java.util.Locale("vi", "VN");
+            java.text.NumberFormat vnd = java.text.NumberFormat.getCurrencyInstance(viVN);
+            vnd.setMaximumFractionDigits(0);
+            tvOrderTotal.setText("💰 " + vnd.format(order.getTotalPrice()));
             tvOrderDate.setText("📅 Đặt: " + order.getOrderDate());
             tvOrderDeliveryDate.setText("🚚 Giao: " + (order.getDeliveryDate() != null ? order.getDeliveryDate() : "Chưa xác định"));
             tvOrderStatus.setText("⏳ Trạng thái: " + order.getStatus());

@@ -76,7 +76,10 @@ public class CakeAdapter extends RecyclerView.Adapter<CakeAdapter.CakeViewHolder
         public void bind(Cake cake) {
             tvCakeName.setText("🍰 " + cake.getName());
             tvCakeDescription.setText(cake.getDescription());
-            tvCakePrice.setText("💰 " + String.format("%.0f", cake.getPrice()) + "đ");
+            java.util.Locale viVN = new java.util.Locale("vi", "VN");
+            java.text.NumberFormat vnd = java.text.NumberFormat.getCurrencyInstance(viVN);
+            vnd.setMaximumFractionDigits(0);
+            tvCakePrice.setText("💰 " + vnd.format(cake.getPrice()));
             tvCakeStock.setText("📦 Còn: " + cake.getStock());
             tvCakeCategory.setText("🏷️ Loại: " + cake.getCategory());
             tvCakeSize.setText("📏 Size: " + cake.getSize());

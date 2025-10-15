@@ -94,10 +94,7 @@ public class MainActivity extends AppCompatActivity {
             setupButtons();
             
             // Load data after a short delay to ensure everything is initialized
-            recyclerView.postDelayed(() -> {
-                loadData();
-                addSampleData();
-            }, 100);
+            recyclerView.postDelayed(this::loadData, 100);
             
         } catch (Exception e) {
             Toast.makeText(this, "Lỗi khởi tạo ứng dụng: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -678,7 +675,12 @@ public class MainActivity extends AppCompatActivity {
         cakeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCake.setAdapter(cakeAdapter);
 
-        // Helper: cập nhật tổng tiền = price * quantity
+        // Helper: format VND
+        java.util.Locale viVN = new java.util.Locale("vi", "VN");
+        java.text.NumberFormat vndFormat = java.text.NumberFormat.getCurrencyInstance(viVN);
+        vndFormat.setMaximumFractionDigits(0);
+
+        // Helper: cập nhật tổng tiền = price * quantity, hiển thị VND
         Runnable updateTotal = () -> {
             try {
                 int pos = spCake.getSelectedItemPosition();
@@ -688,7 +690,7 @@ public class MainActivity extends AppCompatActivity {
                     price = localCakes.get(pos).getPrice();
                 }
                 double totalVal = price * Math.max(qty, 0);
-                etTotal.setText(String.valueOf(totalVal));
+                etTotal.setText(vndFormat.format(totalVal));
             } catch (Exception ignored) {}
         };
 
@@ -806,7 +808,9 @@ public class MainActivity extends AppCompatActivity {
                 int customerId = Integer.parseInt(customerIdStr);
                 int cakeId = Integer.parseInt(cakeIdStr);
                 int quantity = Integer.parseInt(quantityStr);
-                double total = Double.parseDouble(totalStr);
+                // totalStr có thể đã được format VND, cần làm sạch để parse số
+                String normalizedTotal = totalStr.replaceAll("[^0-9]", "");
+                double total = normalizedTotal.isEmpty() ? 0 : Double.parseDouble(normalizedTotal);
 
                 // Validate ngày giao không trước ngày đặt
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -898,44 +902,7 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
     
-    // Add sample data for demonstration
-    private void addSampleData() {
-        if (customerDao == null || cakeDao == null) {
-            Toast.makeText(this, "DAO chưa được khởi tạo", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        executorService.execute(() -> {
-            try {
-                // Kiểm tra và thêm sample customers
-                List<Customer> existingCustomers = customerDao.getAllCustomers().getValue();
-                if (existingCustomers == null || existingCustomers.isEmpty()) {
-                    customerDao.insertCustomers(
-                        new Customer("Nguyễn Văn An", "an.nguyen@email.com", "0123456789", "123 Đường ABC, Quận 1, TP.HCM", "VIP"),
-                        new Customer("Trần Thị Bình", "binh.tran@email.com", "0987654321", "456 Đường XYZ, Quận 2, TP.HCM", "Regular"),
-                        new Customer("Lê Văn Cường", "cuong.le@email.com", "0369852147", "789 Đường DEF, Quận 3, TP.HCM", "New")
-                    );
-                }
-                
-                // Kiểm tra và thêm sample cakes
-                List<Cake> existingCakes = cakeDao.getAllCakes().getValue();
-                if (existingCakes == null || existingCakes.isEmpty()) {
-                    cakeDao.insertCakes(
-                        new Cake("Bánh Sinh Nhật Chocolate", "Bánh sinh nhật chocolate thơm ngon với kem tươi", 250000, 10, "Birthday", "Medium", "Chocolate"),
-                        new Cake("Bánh Cưới Vanilla", "Bánh cưới vanilla sang trọng cho ngày đặc biệt", 500000, 5, "Wedding", "Large", "Vanilla"),
-                        new Cake("Bánh Kỷ Niệm Strawberry", "Bánh kỷ niệm vị dâu tây ngọt ngào", 180000, 15, "Anniversary", "Small", "Strawberry"),
-                        new Cake("Bánh Tiramisu", "Bánh tiramisu Ý truyền thống", 320000, 8, "Custom", "Medium", "Mixed"),
-                        new Cake("Bánh Red Velvet", "Bánh red velvet với cream cheese", 280000, 12, "Birthday", "Medium", "Mixed")
-                    );
-                }
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "❌ Lỗi thêm dữ liệu mẫu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-                e.printStackTrace();
-            }
-        });
-    }
+    // Đã loại bỏ logic thêm dữ liệu mẫu
     
     @Override
     protected void onDestroy() {
